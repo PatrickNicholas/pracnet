@@ -1,6 +1,6 @@
 #pragma once 
 
-#include <ip/helper/socket.h>   // socket_t
+#include <network/ip/helper/socket.h>   // socket_t
 
 namespace network {
 namespace ip {
@@ -21,6 +21,8 @@ public:
         return handle_;
     }
 
+	int setnonblocking();
+	int setcloseexec();
     // TODO: options
 };
 

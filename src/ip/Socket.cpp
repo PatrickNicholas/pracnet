@@ -1,4 +1,4 @@
-#include <ip/Socket.h>
+#include <network/ip/Socket.h>
 
 #include <cassert>          // assert
 
@@ -27,6 +27,14 @@ Socket::Socket(socket::socket_t fd)
 Socket::~Socket() 
 {
     close_socket(handle_);
+}
+
+int Socket::setcloseexec() {
+	return socket::setcloseexec(handle_);
+}
+
+int Socket::setnonblocking() {
+	return socket::setnonblocking(handle_);
 }
 
 } // namespace ip

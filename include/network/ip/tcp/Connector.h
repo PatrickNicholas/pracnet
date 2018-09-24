@@ -1,7 +1,7 @@
 #pragma once  
 
-#include <ip/Socket.h>      // Socket
-#include <ip/InetAddress.h> // InetAddress
+#include <network/ip/Socket.h>      // Socket
+#include <network/ip/InetAddress.h> // InetAddress
 
 namespace network {
 namespace ip {
@@ -29,7 +29,7 @@ public:
     void connect(const InetAddress &);
 
     Socket & socket();
-}
+};
 
 } // namespace tcp
 } // namespace ip

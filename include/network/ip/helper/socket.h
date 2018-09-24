@@ -2,9 +2,15 @@
 
 #include <cstddef>
 
-struct sockaddr;
-struct sockaddr_in;
-struct sockaddr_in6;
+#ifndef _WIN32
+#   include <fcntl.h>
+#   include <netinet/in.h>
+#   include <sys/socket.h>
+#   include <sys/types.h>
+#   include <unistd.h>
+#else
+#   include <winsock2.h>
+#endif
 
 namespace network {
 namespace socket {

@@ -1,7 +1,7 @@
-#include <ip/tcp/Acceptor.h>        // Acceptor
-#include <ip/helper/socket.h>       // socket::*
+#include <network/ip/tcp/Acceptor.h>        // Acceptor
+#include <network/ip/helper/socket.h>       // socket::*
 #include <errno.h>                  // errno
-#include <utils/unreachable.h>      // unreachable()
+#include <network/utils/unreachable.h>      // unreachable()
 
 namespace network {
 namespace ip {

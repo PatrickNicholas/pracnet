@@ -1,18 +1,12 @@
-#include <ip/helper/socket.h>
+#include <network/ip/helper/socket.h>
 
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
-#ifndef _WIN32
-#   include <fcntl.h>
-#   include <netinet/in.h>
-#   include <sys/socket.h>
-#   include <sys/types.h>
-#   include <unistd.h>
-#else
-#   include <winsock2.h>
+#ifdef _WIN32
 #   pragma comment(lib, "ws2_32.lib")
+typedef int socklen_t;
 #endif
 
 namespace network {
@@ -128,12 +122,23 @@ int accept(socket_t sock, struct sockaddr_in6 *addr)
 
 int read(socket_t sock, void *buf, size_t count)
 {
+#ifndef _WIN32
     return ::read(sock, buf, count);
+#else
+	return ::recv(sock, reinterpret_cast<char*>(buf), 
+		static_cast<int>(count), 0);
+#endif
 }
 
 int write(socket_t sock, const void *buf, size_t count) 
 {
+#ifndef _WIN32
     return ::write(sock, buf, count);
+#else
+	return ::send(sock, reinterpret_cast<char*>(
+		const_cast<void*>(buf)), 
+		static_cast<int>(count), 0);
+#endif
 }
 
 int setnonblocking(socket_t sock)
@@ -175,7 +180,7 @@ int socketpair(int family, int type, int protocol, socket_t fd[2])
     socket_t acceptor = -1;
     struct sockaddr_in listen_addr;
     struct sockaddr_in connect_addr;
-    unsigned int size;
+    int size;
 
     if (protocol || family != AF_INET) {
         fprintf(stderr, "EAFNOSUPPORT\n");
@@ -190,6 +195,7 @@ int socketpair(int family, int type, int protocol, socket_t fd[2])
     listener = create(AF_INET, type, 0);
     if (listener < 0)
         return -1;
+
     memset(&listen_addr, 0, sizeof(listen_addr));
     listen_addr.sin_family = AF_INET;
     listen_addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);

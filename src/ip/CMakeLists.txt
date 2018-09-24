@@ -5,6 +5,7 @@ set(SOURCE_FILES
     Socket.cpp
     
     tcp/Acceptor.cpp
+	tcp/Connector.cpp
 
     helper/socket.cpp
     )

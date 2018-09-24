@@ -1,5 +1,5 @@
 #include <cstring>              // memset, bzero
-#include <ip/InetAddress.h>     // class InetAddress
+#include <network/ip/InetAddress.h>     // class InetAddress
 #include <stdexcept>            // std::invalid_argument
 
 extern "C" {
