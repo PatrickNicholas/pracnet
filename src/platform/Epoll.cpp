@@ -1,5 +1,4 @@
 #include "platform/Epoll.h"
-#include "exception/exception.h"
 
 #include <cassert>
 #include <cstdio>
@@ -13,6 +12,7 @@
 
 #include <network/Event.h>
 #include <network/EventHandler.h>
+#include <network/exception/exception.h>
 
 namespace network {
 
@@ -36,7 +36,7 @@ Event FillEvent(uint32_t flags)
 void ThrowErrnoException(const std::string &what) {
 	char message[128] = { 0 };
 	strerror_r(errno, message, sizeof(message));
-	throw Exception(what + ":" + message);
+	throw Exception(what + ": " + message);
 }
 
 void close_no_eintr(int fd) {

@@ -9,9 +9,9 @@ EventBase::EventBase()
     : isTerminal_(false)
     , baseThreadID_(std::this_thread::get_id())
     , selector_(CreateSelector())
-    , signalMgr_(*this)
+    //, signalMgr_(*this)
 {
-    signalMgr_.initialize();
+    //signalMgr_.initialize();
 }
 
 EventBase::~EventBase() {

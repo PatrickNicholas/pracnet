@@ -8,7 +8,7 @@ namespace {
 
 void close_socket(socket::socket_t fd)
 {
-    if (fd >= 0) {
+    if (fd != INVALID_SOCKET) {
         int res = socket::close(fd);
         assert(res == 0 && "some logic error arose.");
     }
@@ -17,7 +17,7 @@ void close_socket(socket::socket_t fd)
 } // anonymous namespace
 
 Socket::Socket() 
-    : handle_{ -1 } 
+    : handle_{ INVALID_SOCKET } 
     {}
 
 Socket::Socket(socket::socket_t fd)
@@ -27,6 +27,11 @@ Socket::Socket(socket::socket_t fd)
 Socket::~Socket() 
 {
     close_socket(handle_);
+}
+
+Socket Socket::create(int domain, int type, int protocol) 
+{
+	return Socket{ socket::create(domain, type, protocol) };
 }
 
 int Socket::setcloseexec() {

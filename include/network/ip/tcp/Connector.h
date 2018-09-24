@@ -2,12 +2,14 @@
 
 #include <network/ip/Socket.h>      // Socket
 #include <network/ip/InetAddress.h> // InetAddress
+#include <network/ip/SocketOwner.h>
+#include <network/ip/tcp/Connection.h>
 
 namespace network {
 namespace ip {
 namespace tcp {
 
-class Connector 
+class Connector final : public Connection
 {
     Connector(const Connector &) = delete;
     Connector &operator = (const Connector &) = delete;
@@ -18,17 +20,12 @@ class Connector
     };
 
     status_t status_;
-    Socket socket_;
-    InetAddress address_;
-
 public:
-    Connector();
-    ~Connector();
+	using Connection::Connection;
+	Connector(Connector&&) = default;
+	Connector& operator=(Connector&&) = default;
 
-    // void bind(const InetAddresss &);
     void connect(const InetAddress &);
-
-    Socket & socket();
 };
 
 } // namespace tcp

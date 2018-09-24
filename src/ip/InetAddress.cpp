@@ -1,14 +1,15 @@
-#include <cstring>              // memset, bzero
+#include <string.h>              // memset, bzero
+
 #include <network/ip/InetAddress.h>     // class InetAddress
-#include <stdexcept>            // std::invalid_argument
+
+#include "ip/exception.h"
 
 extern "C" {
-#include <arpa/inet.h>          // inet_pton
-
 #ifdef _WIN32
 #   include <winsock2.h>
 #   include <ws2tcpip.h>        // getaddrinfo
 #else
+#	include <arpa/inet.h>          // inet_pton
 #   include <sys/socket.h>
 #   include <netdb.h>           // getaddrinfo
 #endif
@@ -81,34 +82,39 @@ public:
 
 };
 
-InetAddress InetAddress::parseV4(const char *ip) 
+InetAddress InetAddress::parseV4(const char *ip, int port)
 {
-    sockaddr_in v4addr;
-    memset(&v4addr, 0, sizeof(v4addr));
-    int res = inet_pton(AF_INET, ip, &v4addr);
+    sockaddr_in addr;
+    bzero(&addr, sizeof(addr));
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(port);
+    int res = inet_pton(AF_INET, ip, &addr.sin_addr);
     if (res == 1) {
-        return InetAddress(std::make_shared<InetAddressV4>(v4addr));
+        return InetAddress(std::make_shared<InetAddressV4>(addr));
     }
     else if (res == 0) {
-        throw std::invalid_argument("not valid ip v4 address.");
+		throw Exception("invalid ip v4 network address");
     } else {
-        throw std::invalid_argument("TODO:");
+		throw Exception("AF not support");
     }
 }
 
-InetAddress InetAddress::parseV6(const char *ip) 
+InetAddress InetAddress::parseV6(const char *ip, int port)
 {
     sockaddr_in6 v6;
     memset(&v6, 0, sizeof(v6));
+	v6.sin6_family = AF_INET6;
+	v6.sin6_port = htons(port);
     int res = inet_pton(AF_INET6, ip, &v6);
     if (res == 1) {
         return InetAddress(std::make_shared<InetAddressV6>(v6));
     }
-    else if (res == 0) {
-        throw std::invalid_argument("not valid ip v6 address.");
-    } else {
-        throw std::invalid_argument("TODO:");
-    }
+	else if (res == 0) {
+		throw Exception("invalid ip v6 network address");
+	}
+	else {
+		throw Exception("AF not support");
+	}
 }
 
 size_t InetAddress::length() const

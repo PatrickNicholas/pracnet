@@ -24,8 +24,8 @@ public:
     explicit InetAddress() : pImpl_(NULL) {}
     explicit InetAddress(pointer p) : pImpl_(p) {}
 
-    static InetAddress parseV4(const char *ip);
-    static InetAddress parseV6(const char *ip);
+    static InetAddress parseV4(const char *ip, int port);
+    static InetAddress parseV6(const char *ip, int port);
     static std::list<InetAddress> query(const char *host);
 
     size_t length() const;

@@ -6,7 +6,6 @@
 
 #ifdef _WIN32
 #   pragma comment(lib, "ws2_32.lib")
-typedef int socklen_t;
 #endif
 
 namespace network {
@@ -64,9 +63,9 @@ int close(socket_t sock)
 #endif
 }
 
-int bind(socket_t sock, const struct sockaddr *addr)
+int bind(socket_t sock, const struct sockaddr *addr, socklen_t len)
 {
-    return ::bind(sock, addr, static_cast<socklen_t>(sizeof(*addr)));
+    return ::bind(sock, addr, len);
 }
 
 int bind(socket_t sock, const struct sockaddr_in *addr) 
@@ -81,9 +80,9 @@ int bind(socket_t sock, const struct sockaddr_in6 *addr)
         static_cast<socklen_t>(sizeof(*addr)));
 }
 
-int connect(socket_t sock, const struct sockaddr *addr)
+int connect(socket_t sock, const struct sockaddr *addr, socklen_t len)
 {
-    return ::connect(sock, addr, static_cast<socklen_t>(sizeof(addr)));
+    return ::connect(sock, addr, len);
 }
 
 int connect(socket_t sock, const struct sockaddr_in *addr)
@@ -251,6 +250,23 @@ fail:
 
     return -1;
 #endif 
+}
+
+std::string error() {
+	char message[128] = { 0 };
+#ifdef _WIN32
+	strerror_s(message, sizeof(message), errno);
+#else 
+	int err = errno;
+	if (err < sys_nerr)
+		snprintf(message, sizeof(message), "%s", sys_errlist[err]);
+	else
+		snprintf(message, sizeof(message), "Unknown error %d", err);
+
+	//char *res = strerror_r(errno, message, sizeof(message));
+	//printf("%s %d %s", message, strlen(message), res);
+#endif 
+	return message;
 }
 
 } // namespace socket

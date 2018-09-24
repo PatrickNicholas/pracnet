@@ -1,6 +1,7 @@
 #pragma once 
 
 #include <cstddef>
+#include <string>
 
 #ifndef _WIN32
 #   include <fcntl.h>
@@ -20,8 +21,11 @@ namespace socket {
  * Windows, this is an intptr_t; elsewhere, it is an int. */
 #ifdef _WIN32
     typedef intptr_t socket_t;
+	typedef int socklen_t;
+	/* INVALID_SOCKET */
 #else 
     typedef int socket_t;
+#	define INVALID_SOCKET (-1)
 #endif
 
 socket_t create(int domain, int type, int protocol);
@@ -29,11 +33,11 @@ int close(socket_t socket);
 
 int listen(socket_t sock, int backlog);
 
-int bind(socket_t sock, const struct sockaddr *addr);
+int bind(socket_t sock, const struct sockaddr *addr, socklen_t len);
 int bind(socket_t sock, const struct sockaddr_in *addr);
 int bind(socket_t sock, const struct sockaddr_in6 *addr);
 
-int connect(socket_t sock, const struct sockaddr *addr);
+int connect(socket_t sock, const struct sockaddr *addr, socklen_t len);
 int connect(socket_t sock, const struct sockaddr_in *addr);
 int connect(socket_t sock, const struct sockaddr_in6 *addr);
 
@@ -48,6 +52,8 @@ int setnonblocking(socket_t sock);
 int setcloseexec(socket_t sock);
 
 int socketpair(int domain, int type, int protocol, socket_t sv[2]);
+
+std::string error();
 
 } // namespace socket
 } // namespace network

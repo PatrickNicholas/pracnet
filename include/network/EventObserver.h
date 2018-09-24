@@ -8,7 +8,7 @@ namespace network {
 class EventObserver {
 public:
 	virtual EventID id() const = 0;
-	virtual ~EventObserver() = 0;
+	virtual ~EventObserver() {};
 	virtual bool isReading() const = 0;
 	virtual bool isWriting() const = 0;
 	virtual void dispatch(const Event &event) = 0;

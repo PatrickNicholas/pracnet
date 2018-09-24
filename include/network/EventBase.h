@@ -23,7 +23,7 @@ class EventBase final
     bool isTerminal_;
     std::thread::id baseThreadID_;
     std::shared_ptr<Selector> selector_;
-	SignalManager signalMgr_;
+	//SignalManager signalMgr_;
     TimerQueue timerQueue_;
     
 public:

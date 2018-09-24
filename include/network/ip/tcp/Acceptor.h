@@ -2,36 +2,32 @@
 
 #include <network/ip/Socket.h>      // Socket
 #include <network/ip/InetAddress.h> // InetAddress
+#include <network/ip/SocketOwner.h>
+
+#include <iostream>
 
 namespace network {
 namespace ip {
 namespace tcp {
 
-class Acceptor 
+class Acceptor final : public SocketOwner
 {
+	Acceptor(const Acceptor &) = delete;
+	Acceptor & operator = (const Acceptor &) = delete;
+
     enum class status_t {
         None,
         Listening,
     };
 
-    InetAddress address_;
-    Socket socket_;
-    status_t status_;
-
+    status_t status_ = status_t::None;
 public:
-    Acceptor(const Acceptor &) = delete;
-    Acceptor & operator = (const Acceptor &) = delete;
+	using SocketOwner::SocketOwner;
+	Acceptor(Acceptor &&socket) = default;
+	Acceptor& operator=(Acceptor&&) = default;
 
-    Acceptor();
-    ~Acceptor();
-
-    void bind(const InetAddress & address);
-    void listen(const InetAddress &address);
-    void listen();
-
+    void listen(int backlog);
     Socket accept();
-
-    Socket & socket();
 };
 
 } // namespace tcp
