@@ -13,8 +13,7 @@ namespace network {
 class Event;
 class EventHandler;
 
-class Epoll final : public Selector
-{
+class Epoll final : public Selector {
     using EventList = std::vector<epoll_event>;
     using ObserverSet = std::unordered_set<EventID>;
 
@@ -22,19 +21,19 @@ class Epoll final : public Selector
 
     int epollfd_;
     EventList events_;
-	ObserverSet observerSet_;
+    ObserverSet observerSet_;
 
-public:
-    Epoll(const Epoll &) = delete;
-    Epoll & operator = (const Epoll &) = delete;
+   public:
+    Epoll(const Epoll&) = delete;
+    Epoll& operator=(const Epoll&) = delete;
 
     Epoll();
     virtual ~Epoll();
-    
-	bool empty() const override;
-    void update(const EventObserver &) override;
-    void remove(const EventObserver &) override;
-    void dispatch(std::vector<EventContext> &actives, long timeout) override;
+
+    bool empty() const override;
+    void update(const EventObserver&) override;
+    void remove(const EventObserver&) override;
+    void dispatch(std::vector<EventContext>& actives, long timeout) override;
 };
 
-} // namespace network
+}  // namespace network

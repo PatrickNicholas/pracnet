@@ -1,16 +1,16 @@
-#pragma once 
+#pragma once
 
 #include <string>
 
 namespace network {
 
-class Exception 
-{
+class Exception {
     std::string message_;
-public:
+
+   public:
     Exception(std::string what) : message_(what) {}
 
-    const std::string & message() const { return message_; }
+    const std::string& message() const { return message_; }
 };
 
-} // namespace network
+}  // namespace network

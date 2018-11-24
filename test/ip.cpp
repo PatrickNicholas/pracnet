@@ -1,5 +1,3 @@
 #include <unittest.h>
 
-TEST_CASE(ip_test) {
-
-}
+TEST_CASE(ip_test) {}

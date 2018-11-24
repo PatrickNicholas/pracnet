@@ -1,7 +1,5 @@
-#pragma once 
+#pragma once
 
 #include <cassert>
 
-static inline void unreachable() {
-    assert(0 && "unreachable");
-}
+static inline void unreachable() { assert(0 && "unreachable"); }

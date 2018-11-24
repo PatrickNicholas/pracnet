@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 namespace network {
 
@@ -9,4 +9,4 @@ typedef HANDLE EventID;
 typedef int EventID;
 #endif
 
-} // namespace network
+}  // namespace network

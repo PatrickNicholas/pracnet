@@ -1,7 +1,7 @@
 include_directories(. )
 
 #aux_source_directory(. SOURCE_FILES)
-set(SOURCE_FILES 
+set(SOURCE_FILES
 	Epoll.cpp
 	Selector.cpp
 	SignalManager.cpp

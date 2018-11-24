@@ -12,19 +12,19 @@ class EventHandler;
 
 typedef std::function<void()> SignalCallback;
 
-class SignalManager
-{
+class SignalManager {
     // FIXME:
     int writefd_ = -1;
-    EventBase &base_;
+    EventBase& base_;
     std::shared_ptr<EventHandler> handler_;
     std::map<int, SignalCallback> callbacks_;
-public:
-    SignalManager(EventBase &base);
+
+   public:
+    SignalManager(EventBase& base);
     ~SignalManager();
 
-    SignalManager(const SignalManager &) = delete;
-    SignalManager &operator = (const SignalManager &) = delete;
+    SignalManager(const SignalManager&) = delete;
+    SignalManager& operator=(const SignalManager&) = delete;
 
     void initialize();
 
@@ -36,4 +36,4 @@ public:
     void onSignal();
 };
 
-} // namespace network
+}  // namespace network

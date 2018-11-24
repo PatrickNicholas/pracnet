@@ -14,11 +14,10 @@
 
 namespace network {
 
-std::shared_ptr<Selector> CreateSelector()
-{
+std::shared_ptr<Selector> CreateSelector() {
 #if defined(HAVE_EPOLL)
     return std::make_shared<Epoll>();
 #endif
 }
 
-} // namespace network
+}  // namespace network
