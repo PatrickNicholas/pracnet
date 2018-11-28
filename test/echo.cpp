@@ -22,23 +22,30 @@ using namespace network;
 using namespace network::ip;
 using namespace network::ip::tcp;
 
-class EchoClient : public std::enable_shared_from_this<EchoClient> {
+class EchoClient {
    public:
     EchoClient(EventBase& base, Connection&& conn)
         : conn_{std::move(conn)}, handler_{base, conn_.socket()} {
     }
+    ~EchoClient() {
+        cout << "i am killed, seeya!" << endl;
+    }
 
     void enable() {
-        auto self = shared_from_this();
-        handler_.setReadCallback(std::bind(&EchoClient::read, self));
+        handler_.setReadCallback(std::bind(&EchoClient::read, this));
         handler_.enableReading();
     }
 
     void read() {
+        cout << "client " << conn_.socket() << " readable" << endl;
         char buf[128];
         size_t count = conn_.read(buf, 128);
         if (count != 0) {
             conn_.write(buf, count);
+        } else if (conn_.eof()) {
+            cout << "client " << conn_.socket() << " closed" << endl;
+            handler_.disableReading();
+            delete this;
         }
     }
 
@@ -63,14 +70,11 @@ int main(int argc, char** argv) {
         EventBase base;
 
         EventHandler ack{base, acceptor.socket()};
-        std::unordered_map<EventID, std::shared_ptr<EchoClient>> clientMap;
 
         ack.enableReading();
-        ack.setReadCallback([&clientMap, &base, &acceptor]() {
+        ack.setReadCallback([&base, &acceptor]() {
             Connection conn = acceptor.accept();
-            shared_ptr<EchoClient> client =
-                std::make_shared<EchoClient>(base, std::move(conn));
-            clientMap[conn.socket()] = client;
+            EchoClient *client = new EchoClient(base, std::move(conn));
 
             cout << "new connection" << endl;
             client->enable();
