@@ -26,8 +26,7 @@ class Event {
     void clear() { status_ = kEmpty; }
 
     void add(unsigned state) {
-        assert(kEmpty < state && state <= kWrite &&
-               "out of status ranges.");
+        assert(kEmpty < state && state <= kWrite && "out of status ranges.");
         status_ |= state;
     }
 

@@ -25,11 +25,8 @@ using namespace network::ip::tcp;
 class EchoClient {
    public:
     EchoClient(EventBase& base, Connection&& conn)
-        : conn_{std::move(conn)}, handler_{base, conn_.socket()} {
-    }
-    ~EchoClient() {
-        cout << "i am killed, seeya!" << endl;
-    }
+        : conn_{std::move(conn)}, handler_{base, conn_.socket()} {}
+    ~EchoClient() { cout << "i am killed, seeya!" << endl; }
 
     void enable() {
         handler_.setReadCallback(std::bind(&EchoClient::read, this));
@@ -74,7 +71,7 @@ int main(int argc, char** argv) {
         ack.enableReading();
         ack.setReadCallback([&base, &acceptor]() {
             Connection conn = acceptor.accept();
-            EchoClient *client = new EchoClient(base, std::move(conn));
+            EchoClient* client = new EchoClient(base, std::move(conn));
 
             cout << "new connection" << endl;
             client->enable();
