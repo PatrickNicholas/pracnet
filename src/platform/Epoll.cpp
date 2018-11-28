@@ -30,17 +30,13 @@ Event FillEvent(uint32_t flags) {
     return event;
 }
 
+#include <stdio.h>
+
 void ThrowErrnoException(const std::string& what) {
+    printf("errno = %d\n", errno);
     char message[128] = {0};
     strerror_r(errno, message, sizeof(message));
     throw Exception(what + ": " + message);
-}
-
-void close_no_eintr(int fd) {
-    int res;
-    do {
-        res = close(fd);
-    } while (res == EINTR);
 }
 
 }  // anonymous namespace
@@ -55,7 +51,7 @@ Epoll::Epoll() : events_(kInitEventListSize) {
 
 Epoll::~Epoll() {
     if (epollfd_ != -1) {
-        close_no_eintr(epollfd_);
+        close(epollfd_);
     }
 }
 
@@ -75,11 +71,13 @@ void Epoll::update(const EventObserver& observer) {
 
     auto it = observerSet_.find(id);
     if (it == observerSet_.end()) {
+        printf("epoll_ctl add %d\n", id);
         if (epoll_ctl(epollfd_, EPOLL_CTL_ADD, id, &epoll) == -1) {
             ThrowErrnoException("epoll_ctl");
         }
         observerSet_.insert(id);
     } else {
+        printf("epoll_ctl mod %d\n", id);
         if (epoll_ctl(epollfd_, EPOLL_CTL_MOD, id, &epoll) == -1) {
             ThrowErrnoException("epoll_ctl");
         }
@@ -90,6 +88,7 @@ void Epoll::remove(const EventObserver& observer) {
     assert(epollfd_ > 0 && "call remove on error instance.");
 
     EventID id = observer.id();
+    printf("epoll_ctl del %d\n", id);
     if (epoll_ctl(epollfd_, EPOLL_CTL_DEL, id, NULL) == -1) {
         ThrowErrnoException("epoll_ctl");
     }

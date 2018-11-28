@@ -22,14 +22,17 @@ using namespace network;
 using namespace network::ip;
 using namespace network::ip::tcp;
 
-class EchoClient {
+class EchoClient : public std::enable_shared_from_this<EchoClient> {
    public:
     EchoClient(EventBase& base, Connection&& conn)
-        : conn_{std::move(conn)}, handler_{base, conn.socket()} {
-        handler_.setReadCallback(std::bind(&EchoClient::read, this));
+        : conn_{std::move(conn)}, handler_{base, conn_.socket()} {
     }
 
-    void enable() { handler_.enableReading(); }
+    void enable() {
+        auto self = shared_from_this();
+        handler_.setReadCallback(std::bind(&EchoClient::read, self));
+        handler_.enableReading();
+    }
 
     void read() {
         char buf[128];
@@ -53,6 +56,8 @@ int main(int argc, char** argv) {
         acceptor.bind(local);
         acceptor.listen(10);
 
+        cout << "start acceptor at 127.0.0.1:9490" << endl;
+
         acceptor.setnonblocking();
 
         EventBase base;
@@ -75,6 +80,7 @@ int main(int argc, char** argv) {
         base.loop();
     } catch (Exception& e) {
         cout << "Exception " << e.message() << endl;
+        return -1;
     }
     return 0;
 }
