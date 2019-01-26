@@ -120,6 +120,10 @@ int write(socket_t sock, const void* buf, size_t count) {
 #endif
 }
 
+int shutdown(socket_t sock, int how) {
+    return ::shutdown(sock, how);
+}
+
 int setnonblocking(socket_t sock) {
     unsigned long mode = 1;
 #ifdef _WIN32

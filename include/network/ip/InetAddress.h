@@ -20,8 +20,8 @@ class InetAddress {
     class InetAddressImpl;
     typedef std::shared_ptr<InetAddressImpl> pointer;
 
-    explicit InetAddress() : pImpl_(NULL) {}
-    explicit InetAddress(pointer p) : pImpl_(p) {}
+    explicit InetAddress() : impl_(nullptr) {}
+    explicit InetAddress(pointer p) : impl_(p) {}
 
     static InetAddress parseV4(const char* ip, int port);
     static InetAddress parseV6(const char* ip, int port);
@@ -32,7 +32,7 @@ class InetAddress {
     domain_t domain() const;
 
    private:
-    pointer pImpl_;
+    pointer impl_;
 };
 
 }  // namespace ip

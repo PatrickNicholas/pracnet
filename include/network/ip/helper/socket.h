@@ -48,6 +48,8 @@ int accept(socket_t sock, struct sockaddr_in6* addr);
 int read(socket_t sock, void* buff, size_t count);
 int write(socket_t sock, const void* buf, size_t count);
 
+int shutdown(socket_t sock, int how);
+
 int setnonblocking(socket_t sock);
 int setcloseexec(socket_t sock);
 

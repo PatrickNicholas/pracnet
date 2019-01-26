@@ -18,6 +18,8 @@ std::shared_ptr<Selector> CreateSelector() {
 #if defined(HAVE_EPOLL)
     return std::make_shared<Epoll>();
 #endif
+
+    return nullptr;
 }
 
 }  // namespace network

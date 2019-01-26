@@ -65,7 +65,7 @@ size_t Connection::write(const void* buf, size_t len) {
     } else if (again()) {
         return 0;
     } else {
-        ThrowException("Connection::read");
+        ThrowException("Connection::write");
     }
 }
 

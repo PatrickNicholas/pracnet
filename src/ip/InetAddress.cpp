@@ -17,7 +17,6 @@ extern "C" {
 
 namespace network {
 namespace ip {
-namespace {}  // anonymous namespace
 
 class InetAddress::InetAddressImpl {
     InetAddressImpl(const InetAddressImpl&) = delete;
@@ -99,24 +98,24 @@ InetAddress InetAddress::parseV6(const char* ip, int port) {
 }
 
 size_t InetAddress::length() const {
-    if (!pImpl_) {
+    if (!impl_) {
         throw std::invalid_argument("empty InetAddress");
     }
-    return pImpl_->length();
+    return impl_->length();
 }
 
 const sockaddr* InetAddress::address() const {
-    if (!pImpl_) {
+    if (!impl_) {
         throw std::invalid_argument("empty InetAddress");
     }
-    return pImpl_->address();
+    return impl_->address();
 }
 
 domain_t InetAddress::domain() const {
-    if (!pImpl_) {
+    if (!impl_) {
         throw std::invalid_argument("empty InetAddress");
     }
-    return pImpl_->domain();
+    return impl_->domain();
 }
 
 std::list<InetAddress> InetAddress::query(const char* host) {
