@@ -11,15 +11,9 @@ namespace buffer {
 typedef char Byte;
 typedef Byte* Page;
 
-class PagePool final {
-   public:
-    static Byte* alloc(size_t factor = 0);
-    static void free(Byte* byte);
-    static void ref(Byte* bytes);
-};
-
 class Buffer final {
-    friend size_t read_buffer(Connection& conn, Buffer& buffer);
+    friend size_t read_buffer(socket::socket_t sock, Buffer& buffer);
+    friend size_t write_buffer(socket::socket_t sock, Buffer& buffer);
 
    public:
     BufferRef bytes(size_t length);
@@ -34,9 +28,15 @@ class Buffer final {
     Buffer slice(size_t from, size_t to);
 
    private:
+    void readIOVec(struct iovec& vec);
+    void writeIOVec();
+
+    size_t read_index_ = 0;
+    size_t write_index_ = 0;
     std::list<char*> page_refs_;
 };
 
-size_t read_buffer(Connection& conn, Buffer& buffer);
+size_t read_buffer(socket::socket_t sock, Buffer& buffer);
+size_t write_buffer(socket::socket_t sock, Buffer& buffer);
 
 }  // namespace buffer

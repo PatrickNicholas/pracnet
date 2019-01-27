@@ -124,6 +124,14 @@ int shutdown(socket_t sock, int how) {
     return ::shutdown(sock, how);
 }
 
+int readv(socket_t sock, const struct iovec* iov, int cnt) {
+    return ::readv(sock, iov, cnt);
+}
+
+int writev(socket_t sock, const struct iovec* iov, int cnt) {
+    return ::writev(sock, iov, cnt);
+}
+
 int setnonblocking(socket_t sock) {
     unsigned long mode = 1;
 #ifdef _WIN32
