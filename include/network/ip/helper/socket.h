@@ -8,6 +8,7 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/uio.h>
 #include <unistd.h>
 #else
 #include <winsock2.h>
@@ -49,6 +50,9 @@ int read(socket_t sock, void* buff, size_t count);
 int write(socket_t sock, const void* buf, size_t count);
 
 int shutdown(socket_t sock, int how);
+
+int readv(socket_t sock, const struct iovec* iov, int iovcnt);
+int writev(socket_t sock, const struct iovec* iov, int iovcnt);
 
 int setnonblocking(socket_t sock);
 int setcloseexec(socket_t sock);

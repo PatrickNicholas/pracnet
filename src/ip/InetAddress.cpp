@@ -31,6 +31,7 @@ class InetAddress::InetAddressImpl {
 
     virtual size_t length() const = 0;
     virtual const sockaddr* address() const = 0;
+    virtual void print(std::ostream& out) const = 0;
 };
 
 class InetAddressV4 : public InetAddress::InetAddressImpl {
@@ -48,6 +49,10 @@ class InetAddressV4 : public InetAddress::InetAddressImpl {
     virtual const sockaddr* address() const override final {
         return reinterpret_cast<sockaddr*>(const_cast<sockaddr_in*>(&addr_));
     }
+
+    virtual void print(std::ostream& out) const {
+        // TODO(maochuan)
+    }
 };
 
 class InetAddressV6 : public InetAddress::InetAddressImpl {
@@ -64,6 +69,10 @@ class InetAddressV6 : public InetAddress::InetAddressImpl {
 
     virtual const sockaddr* address() const override final {
         return reinterpret_cast<sockaddr*>(const_cast<sockaddr_in6*>(&addr_));
+    }
+
+    virtual void print(std::ostream& out) const {
+        // TODO(maochuan)
     }
 };
 
@@ -159,6 +168,10 @@ std::list<InetAddress> InetAddress::query(const char* host) {
     }
     freeaddrinfo(answer);
     return query_result;
+}
+
+void InetAddress::print(std::ostream& out) const {
+    pImpl_->print(out);
 }
 
 }  // namespace ip

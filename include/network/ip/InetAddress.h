@@ -2,6 +2,7 @@
 
 #include <list>    // std::list
 #include <memory>  // std::shared_ptr
+#include <ostream> // std::ostream
 
 extern "C" {
 #include <sys/socket.h>  // struct sockaddr
@@ -30,10 +31,16 @@ class InetAddress {
     size_t length() const;
     const sockaddr* address() const;
     domain_t domain() const;
+    void print(std::ostream& out) const;
 
    private:
     pointer impl_;
 };
+
+std::ostream& operator<<(std::ostream& out, const InetAddress& address) {
+    address.print(out);
+    return out;
+}
 
 }  // namespace ip
 }  // namespace network
