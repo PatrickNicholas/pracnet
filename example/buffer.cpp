@@ -1,8 +1,7 @@
 #include <buffer.h>
 
+#include <assert.h>
 #include <atomic>
-
-namespace buffer {
 
 struct page_des {
     int32_t factor;
@@ -58,9 +57,14 @@ class PageManager final {
     PageManager(const PageManager&) = delete;
     PageManager& operator=(const PageManager&) = delete;
 
-    static page_des* alloc(int factor){std::lock_mutex} page_des* free()
+    static Holder* holder(int factor) {
+        static Holder holders[10] = {
+            0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+        };
 
-        private:
+        assert(0 <= factor && factor < 10);
+        return holders[factor];
+    }
 };
 
 class PagePool final {
@@ -72,7 +76,7 @@ class PagePool final {
 };
 
 Byte* PagePool::alloc(size_t factor) {
-    page_des* page = holder(factor)->alloc();
+    page_des* page = PageManager::holder(factor)->alloc();
     if (page != nullptr) {
         page->ref = 1;
         return page + 1;
@@ -88,7 +92,7 @@ size_t PagePool::size(Byte* byte) {
 void PagePool::free(Byte* byte) {
     page_des* page = reinterpret_cast<page_des*>(byte) - 1;
     if (!atomic_dec_and_test(&page->ref)) {
-        holder(page->factor)->free(page);
+        PageManager::holder(page->factor)->free(page);
     }
 }
 
@@ -97,7 +101,7 @@ void PagePool::ref(Byte* byte) {
     atomic_inc(&page->ref);
 }
 
-size_t read_buffer(socket::socket_t sock, Buffer& buffer) {
+size_t Buffer::ReadSocket(socket::socket_t sock, Buffer& buffer) {
     struct iovec vecs[3];
     buffer.fill(vecs[0]);
 
@@ -123,8 +127,112 @@ size_t read_buffer(socket::socket_t sock, Buffer& buffer) {
     return size;
 }
 
-size_t write_buffer(socket::socket_t sock, Buffer& bufer) {
+size_t Buffer::WriteSocket(socket::socket_t sock, Buffer& bufer) {}
 
+void Buffer::append(const byte_t* data, size_t len) {
+    extend(len);
+
+    for () }
+
+void Buffer::extend(size_t len) {
+    while (avaliable_ < len) {
+        extendPage();
+    }
 }
 
-}  // namespace buffer
+void Buffer::extendPage() {
+    byte_t* buf = PagePool::alloc(0);
+    // TODO: nullptr
+    avaliable_ += PagePool::size(buf);
+    page_refs_.push_back(buf);
+}
+
+size_t Buffer::size() const {
+    size_t total = 0;
+    for (BufChian* buf = chain_; buf != last_avaliable_buf_; buf = buf->next) {
+        total += PagePool::size(reinterpret_cast<byte*>(buf));
+    }
+    if (last_avaliable_buf_) {
+        total += last_avaliable_buf_->index;
+    }
+    total -= read_index_;
+    return total;
+}
+
+bool Buffer::empty() const {
+    if (last_avaliable_buf_ == nullptr || chain != last_avaliable_buf_ ||
+        last_avaliable_buf_->index) {
+        return true;
+    }
+    return false;
+}
+
+size_t Buffer::capacity() const {
+    size_t cap = 0;
+    for (BufChain* buf = last_avaliable_buf_; buf != nullptr; buf = buf->next) {
+        cap += PagePool::size(reinterpret_cast<byte_t*>(buf)) - buf->index;
+    }
+    return cap;
+}
+
+bool Buffer::readable() const { return read_index_ != 0u; }
+
+bool Buffer::writeable() const { return capacity() != 0; }
+
+bool Buffer::clear() {
+    read_index_ = 0;
+
+    BufChain* buf = chain_;
+    while (buf != nullptr) {
+        BufChain* next = buf->next;
+        PagePool::free(reinterpret_cast<byte_t*>(buf));
+        buf = next;
+    }
+    chain_ = nullptr;
+    last_avaliable_buf_ = nullptr;
+    last_buf_ = nullptr;
+}
+
+void Buffer::append(const byte_t* data, size_t len) {
+    extend(len);
+    appendInternal(data, len);
+}
+
+void Buffer::extend(size_t required) {
+    size_t cap = capacity();
+    if (cap < required) {
+        last_buf_ = alloc();
+        if (chain_ == nullptr) {
+            chain_ = last_avaliable_buf_ = last_buf_;
+        }
+        extend(required);
+    }
+}
+
+BufChain* Buffer::alloc() {
+    BufChain* chain = reinterpret_cast<BufChain*>(PagePool::alloc(0));
+    chain->index = 1;  // notice skip
+    chain->next = nullptr;
+    return chain;
+}
+
+void Buffer::appendInternal(const byte_t* data, size_t len) {
+    if (len == 0) {
+        return;
+    }
+
+    if (last_avaliable_buf_->isFull()) {
+        assert(last_avaliable_buf_->next);
+        last_avaliable_buf_ = last_avaliable_buf_->next;
+    }
+
+    void* start = last_avaliable_buf_ + last_avaliable_buf_->index;
+    size_t cap =
+        PagePool::size(reinterpret_cast<byte_t*>())->last_avaliable_buf_->index;
+    size_t writeable = std::min(len, cap);
+    memcpy(start, data, writeable);
+    last_avaliable_buf_ += writeable;
+    if (writeable < len) {
+        appendInternal(data + writeable, len - writeable);
+    }
+}

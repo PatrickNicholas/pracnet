@@ -12,28 +12,44 @@ typedef char Byte;
 typedef Byte* Page;
 
 class Buffer final {
-    friend size_t read_buffer(socket::socket_t sock, Buffer& buffer);
-    friend size_t write_buffer(socket::socket_t sock, Buffer& buffer);
-
    public:
-    BufferRef bytes(size_t length);
-    size_t readableBytes() const;
-    size_t writeableBytes() const;
-    bool readable() const;
-    bool writeable() const;
-    void clear();
+    static size_t ReadSocket(socket::socket_t sock, Buffer& buffer);
+    static size_t WriteSocket(socket::socket_t sock, Buffer& buffer);
 
-    size_t left() const;
+    struct BufChain {
+        uint32_t index;
+        uint32_t reserved;
+        BufChain *next;
+    };
 
     Buffer slice(size_t from, size_t to);
 
+    void append(const byte_t* data, size_t len);
+    bool read(byte_t** data, size_t len);
+
+    size_t capacity() const;
+    size_t size() const;
+    bool empty() const;
+    bool readable() const;
+    bool writeable() const;
+
+    void clear();
+
    private:
+    void drain();
+
+    BufChain* alloc();
+    void appendInternal(const byte_t* data, size_t len);
+    void extend(size_t required);
+
     void readIOVec(struct iovec& vec);
     void writeIOVec();
 
-    size_t read_index_ = 0;
-    size_t write_index_ = 0;
-    std::list<char*> page_refs_;
+    uint32_t read_index_ = 0;
+
+    BufChain *chain_;
+    BufChain *last_avaliable_buf_;
+    BufChain *last_buf_;
 };
 
 size_t read_buffer(socket::socket_t sock, Buffer& buffer);
