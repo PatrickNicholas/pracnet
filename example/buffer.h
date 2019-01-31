@@ -42,9 +42,6 @@ class Buffer final {
     void appendInternal(const byte_t* data, size_t len);
     void extend(size_t required);
 
-    void readIOVec(struct iovec& vec);
-    void writeIOVec();
-
     uint32_t read_index_ = 0;
 
     BufChain *chain_;
